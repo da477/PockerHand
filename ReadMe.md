@@ -1,5 +1,14 @@
+# Poker Hand Strength Evaluator
+
+## Example Implementation of a Five Card Draw Poker Hand Evaluator
+
+This is an example implementation of a Five Card Draw Poker Hand Evaluator, developed in a functional style using Java and applying the Command design pattern. Please see the description of the task below.
+
+## Contribution
+
+Feel free to contribute by submitting issues or pull requests.
+
 ## Task Description
-### Poker Hand Strength Evaluator
 
 Your task is to develop an algorithm for sorting poker hands according to their strength.
 
