@@ -6,6 +6,7 @@ import com.evolution.bootcamp.poker.Solver;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FiveCardDrawSolver implements Command {
 
@@ -85,35 +86,36 @@ public class FiveCardDrawSolver implements Command {
     }
 
     private static int valueStrengthShirt(List<String> faces, List<String> suits, Map<String, Integer> duplicates) {
+
+        List<Integer> sortedValues = faces.stream()
+                .map(face -> ORDER.indexOf(face.charAt(0)))
+                .sorted()
+                .collect(Collectors.toList());
+        boolean isStraight = IntStream.range(0, sortedValues.size() - 1)
+                .allMatch(i -> sortedValues.get(i + 1) - sortedValues.get(i) == 1);
+
+        boolean isFlush = suits.stream().allMatch(suit -> suit.equals(suits.get(0)));
+
         int strength = 90000;
-
-        boolean isStraight = faces.stream()
-                .map(face -> face.charAt(0) - faces.get(0).charAt(0))
-                .distinct()
-                .count() == 1; // Check if the differences between face values are all the same
-
-        boolean isCare = duplicates.containsValue(4);
-        boolean isFullHouse = duplicates.containsValue(3) && duplicates.containsValue(2);
-        boolean isThree = duplicates.containsValue(3);
-        boolean isTwoPairs = duplicates.values().stream().filter(val -> val == 2).count() > 1;
-        boolean isPairs = duplicates.containsValue(2);
-        boolean isFlush = suits.get(0).equals(suits.get(4));
-
         if (isFlush && isStraight) {
             strength = 10000;
-        } else if (isCare) {
+        } else if (duplicates.containsValue(4)) {
+            // Four of a kind - Care
             strength = 20000 - strengthBiggerCard(duplicates, 4);
-        } else if (isFullHouse) {
-            strength = 30000;
+        } else if (duplicates.containsValue(3) && duplicates.containsValue(2)) {
+            strength = 30000; // Full house
         } else if (isFlush) {
             strength = 40000;
         } else if (isStraight) {
             strength = 50000;
-        } else if (isThree) {
+        } else if (duplicates.containsValue(3)) {
+            // Three of a kind
             strength = 60000 - strengthBiggerCard(duplicates, 3);
-        } else if (isTwoPairs) {
+        } else if (duplicates.values().stream().filter(val -> val == 2).count() == 2) {
+            // Two pairs
             strength = 70000;
-        } else if (isPairs) {
+        } else if (duplicates.containsValue(2)) {
+            // One pair
             strength = 80000 - strengthBiggerCard(duplicates, 2);
         }
         return strength;
